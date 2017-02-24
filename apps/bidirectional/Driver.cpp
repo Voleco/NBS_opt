@@ -316,7 +316,12 @@ int MyCLHandler(char *argument[], int maxNumArgs)
 	}
 	else if (strcmp(argument[0], "-toh") == 0)
 	{
-		TOHTest();
+		if (maxNumArgs < 1)
+		{
+			printf("Usage:\nbidirectional -toh <alg>\n");
+			return 0;
+		}
+		TOHTest(std::atoi(argument[1]));
 		return 1;
 	}
 	else if (strcmp(argument[0], "-pida") == 0)

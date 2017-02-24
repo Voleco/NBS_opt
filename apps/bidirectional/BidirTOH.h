@@ -11,6 +11,6 @@
 
 #include <stdio.h>
 
-void TOHTest();
+void TOHTest(int alg);
 
 #endif /* BidirTOH_hpp */

@@ -41,7 +41,7 @@ Heuristic<TOHState<numDisks>> *BuildPDB(const TOHState<numDisks> &goal)
 }
 
 template <int N, int pdb1Disks>
-void TestTOH(int first, int last)
+void TestTOH(int first, int last, int alg)
 {
 	TemplateAStar<TOHState<N>, TOHMove, TOH<N>> astar;
 	NBS<TOHState<N>, TOHMove, TOH<N>> nbs;
@@ -79,9 +79,9 @@ void TestTOH(int first, int last)
 	
 		b = BuildPDB<N, pdb1Disks>(s);
 		
-		if (1)
+		if (alg == 1)
 		{
-			printf("-=-=-BDS-=-=-\n");
+			printf("-=-=-NBS-=-=-\n");
 			timer.StartTimer();
 			nbs.GetPath(&toh, s, g, f, b, thePath);
 			timer.EndTimer();
@@ -89,7 +89,7 @@ void TestTOH(int first, int last)
 			printf("%llu nodes\t%llu necessary\t", nbs.GetNodesExpanded(), nbs.GetNecessaryExpansions());
 			printf("%1.2fs elapsed\n", timer.GetElapsedTime());
 		}
-		if (1)
+		if (alg==2)
 		{
 			printf("-=-=-MM-=-=-\n");
 			timer.StartTimer();
@@ -99,7 +99,7 @@ void TestTOH(int first, int last)
 			printf("%llu nodes\t", mm.GetNodesExpanded());
 			printf("%1.2fs elapsed\n", timer.GetElapsedTime());
 		}
-		if (1)
+		if (alg ==0)
 		{
 			printf("-=-=-A*-=-=-\n");
 			astar.SetHeuristic(f);
@@ -126,9 +126,9 @@ void TestTOH(int first, int last)
 	delete f;
 }
 
-void TOHTest()
+void TOHTest(int alg)
 {
-	TestTOH<14, 2>(0, 50);
+	TestTOH<14, 4>(0, 50,alg);
 //	TestTOH<14, 4>(0, 50);
 //	TestTOH<14, 5>(0, 50);
 //	TestTOH<14, 6>(0, 50);

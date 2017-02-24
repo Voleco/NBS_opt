@@ -186,7 +186,10 @@ bool NBS<state, action, environment, dataStructure, priorityQueue>::InitializeSe
 	start = from;
 	goal = to;
 	if (start == goal)
+	{
+		currentCost = 0;
 		return false;
+	}
 	
 	queue.forwardQueue.AddOpenNode(start, env->GetStateHash(start), 0, forwardHeuristic->HCost(start, goal));
 	queue.backwardQueue.AddOpenNode(goal, env->GetStateHash(goal), 0, backwardHeuristic->HCost(goal, start));
@@ -210,11 +213,7 @@ bool NBS<state, action, environment, dataStructure, priorityQueue>::ExpandAPair(
 		ExtractFromMiddle(thePath);
 		return true;
 	}
-	else if (queue.forwardQueue.Lookup(nForward).data == queue.backwardQueue.Lookup(nBackward).data) // if success, see if nodes are the same (return path)
-	{
-		ExtractFromMiddle(thePath);
-		return true;
-	}
+
 	else if (!fless(queue.GetLowerBound(), currentCost))
 	{
 		ExtractFromMiddle(thePath);
@@ -256,11 +255,7 @@ void NBS<state, action, environment, dataStructure, priorityQueue>::Expand(uint6
 	//	uint64_t nextID = current.Peek(kOpenReady);
 	//
 	uint64_t tmp = current.Close();
-	assert(tmp == nextID);
-	
-	//this can happen when we expand a single node instead of a pair
-	if (fgreatereq(current.Lookup(nextID).g + current.Lookup(nextID).h, currentCost))
-		return;
+	//assert(tmp == nextID);
 	
 	nodesExpanded++;
 	env->GetSuccessors(current.Lookup(nextID).data, neighbors);
