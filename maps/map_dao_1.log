@@ -1,0 +1,39 @@
+Script started on Thu 23 Feb 2017 02:39:54 PM MST
+]0;jingwei@jingwei-VirtualBox: ~/Desktop/Shared/NBS_Optimization/hog2/mapsjingwei@jingwei-VirtualBox:~/Desktop/Shared/NBS_Optimization/hog2/maps$ exit./idnbsteest -idnbs 97 97[A]0;jingwei@jingwei-VirtualBox: ~/Desktop/Shared/NBS_Optimization/hog2/mapsjingwei@jingwei-VirtualBox:~/Desktop/Shared/NBS_Optimization/hog2/maps$ [4Pexit
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K/[K./map_da o.txt 
+dao/brc000d.map
+s: 840 A*: 4256816 NBS: 3899017
+dao/brc100d.map
+s: 1429 A*: 14165968 NBS: 16344938
+dao/brc101d.map
+s: 1579 A*: 11403924 NBS: 14022686
+dao/brc200d.map
+s: 1499 A*: 8904368 NBS: 9882084
+dao/brc201d.map
+s: 2163 A*: 20931481 NBS: 24878739
+dao/brc202d.map
+s: 2519 A*: 38408182 NBS: 50553005
+dao/brc203d.map
+s: 1319 A*: 7631031 NBS: 7798878
+dao/brc204d.map
+s: 1548 A*: 7665801 NBS: 10975736
+dao/brc300d.map
+s: 1220 A*: 2396313 NBS: 3471572
+dao/brc501d.map
+s: 1370 A*: 18406398 NBS: 26921064
+dao/brc502d.map
+s: 488 A*: 277983 NBS: 294906
+dao/brc503d.map
+s: 1564 A*: 27760239 NBS: 35054225
+dao/brc504d.map
+s: 1587 A*: 22793626 NBS: 31513725
+dao/brc505d.map
+s: 1530 A*: 24024887 NBS: 21895416
+dao/brc997d.map
+s: 669 A*: 978328 NBS: 919888
+dao/brc999d.map
+s: 460 A*: 130274 NBS: 280703
+]0;jingwei@jingwei-VirtualBox: ~/Desktop/Shared/NBS_Optimization/hog2/mapsjingwei@jingwei-VirtualBox:~/Desktop/Shared/NBS_Optimization/hog2/maps$ exit
+exit
+
+Script done on Thu 23 Feb 2017 02:46:02 PM MST
