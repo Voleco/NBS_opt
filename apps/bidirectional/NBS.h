@@ -45,7 +45,7 @@ public:
 	
 	virtual const char *GetName() { return "NBS"; }
 	
-	void ResetNodeCount() { nodesExpanded = nodesTouched = 0; counts.clear(); }
+	void ResetNodeCount() { nodesExpanded = nodesTouched = nodesScreened= 0; counts.clear(); }
 	
 	inline const int GetNumForwardItems() { return queue.forwardQueue.size(); }
 	inline const BDOpenClosedData<state> &GetForwardItem(unsigned int which) { return queue.forwardQueue.Lookat(which); }
@@ -85,6 +85,7 @@ public:
 	}
 	uint64_t GetNodesExpanded() const { return nodesExpanded; }
 	uint64_t GetNodesTouched() const { return nodesTouched; }
+	uint64_t GetNodesScreened() const { return nodesScreened; }
 	uint64_t GetDoubleExpansions() const;
 	uint64_t GetNecessaryExpansions() const {
 		uint64_t necessary = 0;
@@ -129,10 +130,12 @@ private:
 	void Expand(uint64_t nextID,
 				priorityQueue &current,
 				priorityQueue &opposite,
-				Heuristic<state> *heuristic, const state &target);
+				Heuristic<state> *heuristic, const state &target,
+		Heuristic<state> *reverseHeuristic, const state &reverseTarget);
 	//direction ==0 forward; 1 backward
 	//void Expand(int direction);
 	uint64_t nodesTouched, nodesExpanded;
+	uint64_t nodesScreened;
 	state middleNode;
 	double currentCost;
 	double currentSolutionEstimate;
@@ -149,7 +152,7 @@ private:
 	Heuristic<state> *forwardHeuristic;
 	Heuristic<state> *backwardHeuristic;
 	
-	//keep track of whether we expand a node or put it back to open
+	//keep track of whether we expand a node or closed without expand it
 	bool expand;
 	
 	double currentPr;
@@ -221,8 +224,10 @@ bool NBS<state, action, environment, dataStructure, priorityQueue>::ExpandAPair(
 	}
 	
 	counts[queue.GetLowerBound()]+=2;
-	Expand(nForward, queue.forwardQueue, queue.backwardQueue, forwardHeuristic, goal);
-	Expand(nBackward, queue.backwardQueue, queue.forwardQueue, backwardHeuristic, start);
+	Expand(nForward, queue.forwardQueue, queue.backwardQueue, forwardHeuristic, goal, backwardHeuristic,start);
+	
+
+	Expand(nBackward, queue.backwardQueue, queue.forwardQueue, backwardHeuristic, start,forwardHeuristic,goal);
 	return false;
 }
 
@@ -249,7 +254,8 @@ template <class state, class action, class environment, class dataStructure, cla
 void NBS<state, action, environment, dataStructure, priorityQueue>::Expand(uint64_t nextID,
 																			priorityQueue &current,
 																			priorityQueue &opposite,
-																			Heuristic<state> *heuristic, const state &target)
+																			Heuristic<state> *heuristic, const state &target,
+																			Heuristic<state> *reverseHeuristic, const state &reverseTarget)
 {
 	
 	//	uint64_t nextID = current.Peek(kOpenReady);
@@ -257,6 +263,16 @@ void NBS<state, action, environment, dataStructure, priorityQueue>::Expand(uint6
 	uint64_t tmp = current.Close();
 	//assert(tmp == nextID);
 	
+	double NodeF = current.Lookup(nextID).g + current.Lookup(nextID).h;
+	double diff1 = current.Lookup(nextID).g  - reverseHeuristic->HCost(current.Lookup(nextID).data, reverseTarget);
+	NodeF = std::max(NodeF, queue.GetMinF(opposite) + diff1);
+
+	if (!fless(NodeF, currentCost))
+	{
+		nodesScreened++;
+		return;
+	}
+
 	nodesExpanded++;
 	env->GetSuccessors(current.Lookup(nextID).data, neighbors);
 	for (auto &succ : neighbors)
@@ -267,8 +283,12 @@ void NBS<state, action, environment, dataStructure, priorityQueue>::Expand(uint6
 
 		// screening
 		double edgeCost = env->GCost(current.Lookup(nextID).data, succ);
-		if (fgreatereq(current.Lookup(nextID).g+edgeCost, currentCost))
-			continue;
+
+		//double newNodeF = current.Lookup(nextID).g + edgeCost + heuristic->HCost(succ, target);
+		//double diff = current.Lookup(nextID).g + edgeCost - reverseHeuristic->HCost(succ, reverseTarget);
+		//newNodeF = std::max(newNodeF, queue.GetMinF(opposite) + diff);
+		//if (fgreatereq(newNodeF, currentCost))
+		//	continue;
 
 		switch (loc)
 		{
@@ -328,6 +348,8 @@ void NBS<state, action, environment, dataStructure, priorityQueue>::Expand(uint6
 					//		nextID,0);
 					//else
 					double newNodeF = current.Lookup(nextID).g + edgeCost + heuristic->HCost(succ, target);
+					double diff = current.Lookup(nextID).g + edgeCost - reverseHeuristic->HCost(succ, reverseTarget);
+					newNodeF = std::max(newNodeF, queue.GetMinF(opposite) + diff);
 					if (fless(newNodeF , currentCost))
 					{
 						//if (fless(newNodeF, queue.GetLowerBound()))
@@ -342,6 +364,11 @@ void NBS<state, action, environment, dataStructure, priorityQueue>::Expand(uint6
 												current.Lookup(nextID).g + edgeCost,
 												heuristic->HCost(succ, target),
 												nextID, kOpenWaiting);
+							//current.AddOpenNode(succ,
+							//					env->GetStateHash(succ),
+							//					current.Lookup(nextID).g + edgeCost,
+							//					newNodeF - (current.Lookup(nextID).g + edgeCost),
+							//					nextID, kOpenWaiting);
 					}
 					if (loc == kOpenReady || loc == kOpenWaiting)
 					{

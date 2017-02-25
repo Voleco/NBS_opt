@@ -37,6 +37,7 @@ struct NBSCompareOpenWaiting {
 		if (fequal(f1, f2))
 		{
 			return (!fgreater(i1.g, i2.g));
+			//return (!fless(i1.g, i2.g));
 		}
 		return (fgreater(f1, f2)); // low f over high
 	}
@@ -118,10 +119,35 @@ public:
 			backwardQueue.PeekAt(kOpenReady).g+ backwardQueue.PeekAt(kOpenReady).h);
 		CLowerBound = std::max(CLowerBound, forwardQueue.PeekAt(kOpenReady).g + backwardQueue.PeekAt(kOpenReady).g + epsilon);
 	}
+
+	double GetMinF(BDOpenClosed<state, NBSCompareOpenReady<state>, NBSCompareOpenWaiting<state>>& queue);
 	BDOpenClosed<state, NBSCompareOpenReady<state>, NBSCompareOpenWaiting<state>> forwardQueue;
 	BDOpenClosed<state, NBSCompareOpenReady<state>, NBSCompareOpenWaiting<state>> backwardQueue;
 private:
 	double CLowerBound;
 };
+
+template <typename state, int epsilon>
+double NBSQueue<state,epsilon>::GetMinF(BDOpenClosed<state, NBSCompareOpenReady<state>, NBSCompareOpenWaiting<state>>& queue)
+{
+	if (queue.OpenReadySize() == 0)
+	{
+		if(queue.OpenWaitingSize()!=0)
+			return queue.PeekAt(kOpenWaiting).g + queue.PeekAt(kOpenWaiting).h;
+	}
+	else
+	{
+		double minF = DBL_MAX;
+		for (int i = 0; i < queue.OpenReadySize(); i++)
+		{
+			auto item = queue.Lookat(queue.GetOpenItem(i, kOpenReady));
+			if (fless(item.g + item.h, minF))
+				minF = item.g + item.h;
+		}
+		return minF;
+	}
+	return 0;
+}
+
 
 #endif /* NBSQueue_h */
